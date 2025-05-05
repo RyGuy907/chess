@@ -3,20 +3,24 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
+import static java.lang.Math.abs;
 
 public class PieceMovesCalculator {
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private final ChessPiece.PieceType type;
+    private final ChessGame.TeamColor pieceColor;
     private int row;
     private int col;
     private Collection<ChessMove> moves = new ArrayList<>();
 
-    public PieceMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece.PieceType type) {
+    public PieceMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessPiece.PieceType type, ChessGame.TeamColor pieceColor) {
         this.board = board;
         this.myPosition = myPosition;
         this.type = type;
+        this.pieceColor = pieceColor;
         this.row = this.myPosition.getRow();
         this.col = this.myPosition.getColumn();
     }
@@ -33,111 +37,160 @@ public class PieceMovesCalculator {
     }
 
     private Collection<ChessMove> kingMoveCalculator() {
-        for(int x = row - 1; x <= row + 1; x++) {
-            for(int y = col - 1; y <= col + 1; y++) {
-                if (y == col && x == row) {
-                    continue;
-                }
-                else if((x >= 9||y >= 9) || (x <= 0||y <= 0)) {
-                    continue;
-                }
-                else {
-                    ChessPosition newSquare = new ChessPosition(x, y);
-                    ChessMove move = new ChessMove(myPosition, newSquare, null);
-                    moves.add(move);
-                }
+        int[][] kingDirections = {
+                {0,+1}, {+1,+1}, {+1,0}, {+1,-1}, {0,-1}, {-1,-1}, {-1,0}, {-1,+1}
+        };
+        for (int[] n: kingDirections) {
+            int x = row + n[0];
+            int y = col + n[1];
+            if ((x < 0|| y < 0) || (x > 8||y > 8)) {
+                continue;
             }
+            checkAndAdd(x,y);
         }
         return moves;
     }
     private Collection<ChessMove> queenMoveCalculator() {
-        for(int x = row-1; x <= row+1; x++) {
-            for(int y = col-1; y <= col+1; y++) {
-                if (y == row && x == row) {
-                    continue;
+        int[][] queenDirections = {
+                {0,+1}, {+1,+1}, {+1,0}, {+1,-1}, {0,-1}, {-1,-1}, {-1,0}, {-1,+1}
+        };
+        for (int[] n : queenDirections) {
+            int x = row + n[0];
+            int y = col + n[1];
+            while (x >= 1 && x <= 8 && y >= 1 && y <= 8) {
+                int flag = checkAndAdd(x,y);
+                if (flag == 1){
+                    break;
                 }
-                else if((x >= 8||y >= 8) || (x <= 0||y <=0)) {
-                    continue;
-                }
-                else {
-                    ChessPosition newSquare = new ChessPosition(x, y);
-                    ChessMove move = new ChessMove(myPosition, newSquare, null);
-                    moves.add(move);
-                }
+                x += n[0];
+                y += n[1];
             }
         }
         return moves;
     }
     private Collection<ChessMove> bishopMoveCalculator() {
-        for(int x = row-1; x <= row+1; x++) {
-            for(int y = col-1; y <= col+1; y++) {
-                if (y == row && x == row) {
-                    continue;
+        int[][] bishopDirections = {
+                {+1,+1}, {+1,-1}, {-1,-1}, {-1,+1}
+        };
+        for (int[] n : bishopDirections) {
+            int x = row + n[0];
+            int y = col + n[1];
+            while (x >= 1 && x <= 8 && y >= 1 && y <= 8) {
+                int flag = checkAndAdd(x,y);
+                if (flag == 1){
+                    break;
                 }
-                else if((x >= 8||y >= 8) || (x <= 0||y <=0)) {
-                    continue;
-                }
-                else {
-                    ChessPosition newSquare = new ChessPosition(x, y);
-                    ChessMove move = new ChessMove(myPosition, newSquare, null);
-                    moves.add(move);
-                }
+                x += n[0];
+                y += n[1];
             }
         }
         return moves;
     }
     private Collection<ChessMove> knightMoveCalculator() {
-        for(int x = row-1; x <= row+1; x++) {
-            for(int y = col-1; y <= col+1; y++) {
-                if (y == row && x == row) {
-                    continue;
-                }
-                else if((x >= 8||y >= 8) || (x <= 0||y <=0)) {
-                    continue;
-                }
-                else {
-                    ChessPosition newSquare = new ChessPosition(x, y);
-                    ChessMove move = new ChessMove(myPosition, newSquare, null);
-                    moves.add(move);
-                }
+        int[][] knightDirections = {
+                {+2,+1}, {+1,+2}, {-1,+2}, {-2,+1}, {-2,-1}, {-1,-2}, {+1,-2}, {+2,-1}
+        };
+        for (int[] n : knightDirections) {
+            int x = row + n[0];
+            int y = col + n[1];
+            if ((x < 1 || y < 1) || (x > 8||y > 8)) {
+                continue;
             }
+            checkAndAdd(x,y);
         }
         return moves;
     }
     private Collection<ChessMove> rookMoveCalculator() {
-        for(int x = row-1; x <= row+1; x++) {
-            for(int y = col-1; y <= col+1; y++) {
-                if (y == row && x == row) {
-                    continue;
+        int[][] bishopDirections = {
+                {+1,0}, {0,+1}, {-1,0}, {0,-1}
+        };
+        for (int[] n : bishopDirections) {
+            int x = row + n[0];
+            int y = col + n[1];
+            while (x >= 1 && x <= 8 && y >= 1 && y <= 8) {
+                int flag = checkAndAdd(x,y);
+                if (flag == 1){
+                    break;
                 }
-                else if((x >= 8||y >= 8) || (x <= 0||y <=0)) {
-                    continue;
-                }
-                else {
-                    ChessPosition newSquare = new ChessPosition(x, y);
-                    ChessMove move = new ChessMove(myPosition, newSquare, null);
-                    moves.add(move);
-                }
+                x += n[0];
+                y += n[1];
             }
         }
         return moves;
     }
     private Collection<ChessMove> pawnMoveCalculator() {
-        for(int x = row-1; x <= row+1; x++) {
-            for(int y = col-1; y <= col+1; y++) {
-                if (y == row && x == row) {
+        moves.clear();
+        int[][] pawnDirections = {
+                {1,0}, {2,0}, {1,1}, {1,-1}
+        };
+        for (int[] n : pawnDirections) {
+            int x;
+            if (pieceColor == WHITE) {
+                if ((row != 2) && (n[0] == 2)) {
                     continue;
                 }
-                else if((x >= 8||y >= 8) || (x <= 0||y <=0)) {
+                x = row + n[0];
+            }
+            else {
+                if ((row != 7) && (n[0] == 2)) {
                     continue;
                 }
-                else {
-                    ChessPosition newSquare = new ChessPosition(x, y);
-                    ChessMove move = new ChessMove(myPosition, newSquare, null);
-                    moves.add(move);
+                x = row - n[0];
+            }
+            int y = col + n[1];
+            if ((x < 1 || y < 1) || (x > 8 || y > 8)) {
+                continue;
+            }
+            if (n[0] == 2 && n[1] == 0) {
+                int betweenRow = pieceColor == WHITE ? row + 1 : row - 1;
+                if (board.getPiece(new ChessPosition(betweenRow, col)) != null) {
+                    continue;
                 }
             }
+            ChessPosition newSquare = new ChessPosition(x, y);
+            ChessPiece pieceCheck = board.getPiece(newSquare);
+            if ((abs(n[1]) == 1) && (pieceCheck == null)) {
+                continue;
+            }
+            else if ((n[1] == 0) && (pieceCheck != null)) {
+                continue;
+            }
+            checkAndAdd(x, y);
         }
         return moves;
+    }
+    private int checkAndAdd(int x,int y) {
+        ChessPosition newSquare = new ChessPosition(x, y);
+        ChessPiece pieceCheck = board.getPiece(newSquare);
+        if (pieceCheck != null) {
+            if (pieceCheck.getTeamColor() == pieceColor) {
+                return 1;
+            }
+            else {
+                return doAdd(x,y);
+            }
+        }
+        if (type == PAWN && (x == 8 || x == 1)) {
+            return doAdd(x, y);
+        }
+        ChessMove move = new ChessMove(myPosition, newSquare, null);
+        moves.add(move);
+        return 0;
+    }
+    private int doAdd(int x, int y) {
+        if ((type == PAWN) && (x == 8 || x == 1)) {
+            ChessPosition newSquare = new ChessPosition(x, y);
+            moves.add(new ChessMove(myPosition, newSquare, QUEEN));
+            moves.add(new ChessMove(myPosition, newSquare, BISHOP));
+            moves.add(new ChessMove(myPosition, newSquare, ROOK));
+            moves.add(new ChessMove(myPosition, newSquare, KNIGHT));
+            return 1;
+        }
+        else {
+            ChessPosition newSquare = new ChessPosition(x, y);
+            ChessMove move = new ChessMove(myPosition, newSquare, null);
+            moves.add(move);
+            return 1;
+        }
     }
 }
