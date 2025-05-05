@@ -50,6 +50,9 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
+        if (position.getRow() < 1 || position.getRow() > 8 || position.getColumn() < 1 || position.getColumn() > 8) {
+            return null;
+        }
         return squares[(position.getRow()-1)][(position.getColumn()-1)];
     }
 
@@ -58,5 +61,32 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-    }
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                squares[x][y] = null;
+            }
+        }
+        for (int x = 0; x < 8; x++) {
+            ChessPiece.PieceType piece;
+            if (x == 0 || x == 7) {
+                piece = ChessPiece.PieceType.ROOK;
+            }
+            else if (x == 1 || x == 6) {
+                piece = ChessPiece.PieceType.KNIGHT;
+            }
+            else if (x == 2 || x == 5) {
+                piece = ChessPiece.PieceType.BISHOP;
+            }
+            else if (x == 3)     {
+                piece = ChessPiece.PieceType.QUEEN;
+            }
+            else {
+                piece = ChessPiece.PieceType.KING;
+            }
+            squares[0][x] = new ChessPiece(ChessGame.TeamColor.WHITE, piece);
+            squares[1][x] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            squares[6][x] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            squares[7][x] = new ChessPiece(ChessGame.TeamColor.BLACK, piece);
+        }
+        }
 }
