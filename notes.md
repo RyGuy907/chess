@@ -4,3 +4,6 @@ Phase 0 is now complete. Things to review before the programming exam:
   note every file which was updated and retrace my steps
   practice from scratch at least a few times
 
+
+additionally for future reference:
+  a lot of the continue; statements can probably be folded into one line and simplified and some piece methods use similar code and could also be further simplified
