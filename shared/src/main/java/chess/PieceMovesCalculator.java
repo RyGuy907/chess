@@ -43,7 +43,7 @@ public class PieceMovesCalculator {
         for (int[] n: kingDirections) {
             int x = row + n[0];
             int y = col + n[1];
-            if ((x < 0|| y < 0) || (x > 8||y > 8)) {
+            if (!(x >= 1 && x <= 8 && y >= 1 && y <= 8)) {
                 continue;
             }
             checkAndAdd(x,y);
@@ -93,7 +93,7 @@ public class PieceMovesCalculator {
         for (int[] n : knightDirections) {
             int x = row + n[0];
             int y = col + n[1];
-            if ((x < 1 || y < 1) || (x > 8||y > 8)) {
+            if (!(x >= 1 && x <= 8 && y >= 1 && y <= 8)) {
                 continue;
             }
             checkAndAdd(x,y);
@@ -121,10 +121,11 @@ public class PieceMovesCalculator {
     private Collection<ChessMove> pawnMoveCalculator() {
         moves.clear();
         int[][] pawnDirections = {
-                {1,0}, {2,0}, {1,1}, {1,-1}
+                {+1,0}, {+2,0}, {+1,+1}, {+1,-1}
         };
         for (int[] n : pawnDirections) {
             int x;
+            // CONFIRM THAT TWO SPACES CAN ONLY BE MOVED ON THE FIRST MOVE (IN THE STARTING ROWS. ALSO USE THIS TO SET THE X VALUE DEPENDING AND LATER THE Y VALUE.
             if (pieceColor == WHITE) {
                 if ((row != 2) && (n[0] == 2)) {
                     continue;
@@ -138,15 +139,29 @@ public class PieceMovesCalculator {
                 x = row - n[0];
             }
             int y = col + n[1];
+
+
+
+            // CONFIRM THAT IT IS IN BOUNDS
             if ((x < 1 || y < 1) || (x > 8 || y > 8)) {
                 continue;
             }
+
+            // CONFIRM THAT PAWN CANNOT LEAPFROG WHILE TRYING TO MOVE TWO SPACES. CONFIRM IT IS A DOUBLE JUMP AND THEN SET VAR DEPENDING ON COLOR -> CHECK NULL
             if (n[0] == 2 && n[1] == 0) {
-                int betweenRow = pieceColor == WHITE ? row + 1 : row - 1;
-                if (board.getPiece(new ChessPosition(betweenRow, col)) != null) {
+                int var;
+                if (pieceColor == WHITE) {
+                    var = row + 1;
+                } else { var = row - 1; }
+                if (board.getPiece(new ChessPosition(var, col)) != null) {
                     continue;
                 }
             }
+
+            /* CONFIRM THAT
+                1. PAWN CANNOT MOVE TO AN EMPTY DIAGONAL IF IT IS EMPTY
+                2. PAWN CANNOT MOVE TO AN OCCUPIED FORWARD IF IT IS OCCUPIED (BOTH ONE AND TWO SPACES)
+             */
             ChessPosition newSquare = new ChessPosition(x, y);
             ChessPiece pieceCheck = board.getPiece(newSquare);
             if ((abs(n[1]) == 1) && (pieceCheck == null)) {
@@ -162,6 +177,7 @@ public class PieceMovesCalculator {
     private int checkAndAdd(int x,int y) {
         ChessPosition newSquare = new ChessPosition(x, y);
         ChessPiece pieceCheck = board.getPiece(newSquare);
+        //IF THE SPACE IS OCCUPIED, RETURN INVALID FLAG IF OF THE SAME COLOR, CAPTURE OTHERWISE
         if (pieceCheck != null) {
             if (pieceCheck.getTeamColor() == pieceColor) {
                 return 1;
@@ -170,6 +186,7 @@ public class PieceMovesCalculator {
                 return doAdd(x,y);
             }
         }
+        //IF PROMOTION TYPE PAWN (ROWS 1 OR 8), CALL DO_ADD ; ADD NORMALLY AFTER
         if (type == PAWN && (x == 8 || x == 1)) {
             return doAdd(x, y);
         }
@@ -178,6 +195,7 @@ public class PieceMovesCalculator {
         return 0;
     }
     private int doAdd(int x, int y) {
+        //PROMOTION PAWN CHECK - QBRK
         if ((type == PAWN) && (x == 8 || x == 1)) {
             ChessPosition newSquare = new ChessPosition(x, y);
             moves.add(new ChessMove(myPosition, newSquare, QUEEN));
@@ -186,6 +204,7 @@ public class PieceMovesCalculator {
             moves.add(new ChessMove(myPosition, newSquare, KNIGHT));
             return 1;
         }
+        //OTHERWISE ADD NORMALLY
         else {
             ChessPosition newSquare = new ChessPosition(x, y);
             ChessMove move = new ChessMove(myPosition, newSquare, null);
