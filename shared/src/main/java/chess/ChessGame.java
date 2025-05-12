@@ -20,7 +20,7 @@ public class ChessGame {
     public TeamColor getTeamTurn() {
         throw new RuntimeException("Not implemented");
     }
-
+    //test
     /**
      * Set's which teams turn it is
      *
