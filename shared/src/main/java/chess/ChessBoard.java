@@ -25,23 +25,6 @@ public class ChessBoard implements Cloneable {
         squares[(position.getRow()-1)][(position.getColumn()-1)] = piece;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(squares, that.squares);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(squares);
-    }
-
     /**
      * Gets a chess piece on the chessboard
      *
@@ -93,16 +76,18 @@ public class ChessBoard implements Cloneable {
     public ChessBoard clone() {
         try {
             ChessBoard boardCopy = (ChessBoard) super.clone();
+            ChessPiece[][] newSquares = new ChessPiece[8][8];
             for (int x = 0; x < 8; x++) {
                 for (int y = 0; y < 8; y++) {
                     ChessPiece piece = squares[x][y];
                     if (piece == null) {
-                        boardCopy.squares[x][y] = null;
+                        newSquares[x][y] = null;
                     } else {
-                        boardCopy.squares[x][y] = piece.clone();
+                        newSquares[x][y] = piece.clone();
                     }
                     }
             }
+            boardCopy.squares = newSquares;
             return boardCopy;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
