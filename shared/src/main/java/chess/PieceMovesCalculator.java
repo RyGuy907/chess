@@ -139,14 +139,10 @@ public class PieceMovesCalculator {
                 x = row - n[0];
             }
             int y = col + n[1];
-
-
-
             // CONFIRM THAT IT IS IN BOUNDS
             if ((x < 1 || y < 1) || (x > 8 || y > 8)) {
                 continue;
             }
-
             // CONFIRM THAT PAWN CANNOT LEAPFROG WHILE TRYING TO MOVE TWO SPACES. CONFIRM IT IS A DOUBLE JUMP AND THEN SET VAR DEPENDING ON COLOR -> CHECK NULL
             if (n[0] == 2 && n[1] == 0) {
                 int var;
@@ -157,7 +153,6 @@ public class PieceMovesCalculator {
                     continue;
                 }
             }
-
             /* CONFIRM THAT
                 1. PAWN CANNOT MOVE TO AN EMPTY DIAGONAL IF IT IS EMPTY
                 2. PAWN CANNOT MOVE TO AN OCCUPIED FORWARD IF IT IS OCCUPIED (BOTH ONE AND TWO SPACES)
