@@ -52,12 +52,13 @@ public class ChessGame {
         }
         Collection<ChessMove> moves = piece.pieceMoves(board1, startPosition);
         for (ChessMove move : moves) {
-            ChessBoard boardCopy = board1.copy();
+            ChessBoard boardCopy = board1.clone();
             ChessPiece piece1 = boardCopy.getPiece(move.getStartPosition());
             boardCopy.addPiece(move.getStartPosition(), null);
             boardCopy.addPiece(move.getEndPosition(), piece1);
 
         }
+        return moves;
     }
 
     /**
