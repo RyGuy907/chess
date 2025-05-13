@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,7 +52,11 @@ public class ChessGame {
         }
         Collection<ChessMove> moves = piece.pieceMoves(board1, startPosition);
         for (ChessMove move : moves) {
-            if
+            ChessBoard boardCopy = board1.copy();
+            ChessPiece piece1 = boardCopy.getPiece(move.getStartPosition());
+            boardCopy.addPiece(move.getStartPosition(), null);
+            boardCopy.addPiece(move.getEndPosition(), piece1);
+
         }
     }
 
