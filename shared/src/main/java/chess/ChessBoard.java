@@ -94,18 +94,18 @@ public class ChessBoard implements Cloneable {
     public ChessBoard clone() {
         try {
             ChessBoard boardCopy = (ChessBoard) super.clone();
-            ChessPiece[][] newSquares = new ChessPiece[8][8];
+            ChessPiece[][] squaresCopy = new ChessPiece[8][8];
             for (int x = 0; x < 8; x++) {
                 for (int y = 0; y < 8; y++) {
                     ChessPiece piece = squares[x][y];
                     if (piece == null) {
-                        newSquares[x][y] = null;
+                        squaresCopy[x][y] = null;
                     } else {
-                        newSquares[x][y] = piece.clone();
+                        squaresCopy[x][y] = piece.clone();
                     }
                     }
             }
-            boardCopy.squares = newSquares;
+            boardCopy.squares = squaresCopy;
             return boardCopy;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
