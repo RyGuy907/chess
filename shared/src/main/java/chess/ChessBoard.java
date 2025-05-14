@@ -72,6 +72,24 @@ public class ChessBoard implements Cloneable {
             squares[7][x] = new ChessPiece(ChessGame.TeamColor.BLACK, piece);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
+    }
+
     @Override
     public ChessBoard clone() {
         try {
