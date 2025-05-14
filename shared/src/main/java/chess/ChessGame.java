@@ -261,6 +261,7 @@ public class ChessGame {
      *
      * @return the chessboard
      */
+    // get board method
     public ChessBoard getBoard() {
         return board1;
     }
