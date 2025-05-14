@@ -156,6 +156,8 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+
+    //in check method
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition king = null;
         for (int x = 1; x <= 8; x++) {
