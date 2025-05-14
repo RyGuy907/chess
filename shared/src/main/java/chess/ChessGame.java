@@ -96,7 +96,9 @@ public class ChessGame {
                     }
                 }
             }
-            if (!inCheck) validMoveList.add(move);
+            if (!inCheck) {
+                validMoveList.add(move);
+            }
         }
         return validMoveList;
     }
@@ -249,6 +251,7 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
+    // set board method
     public void setBoard(ChessBoard board) {
         board1 = board;
     }
