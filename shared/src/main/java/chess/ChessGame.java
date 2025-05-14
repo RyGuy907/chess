@@ -64,7 +64,10 @@ public class ChessGame {
             }
             ChessPosition king = null;
             boolean inCheck = false;
-            for (int x = 1; x <= 8 && king == null; x++) {
+            for (int x = 1; x <= 8; x++) {
+                if (king != null) {
+                    break;
+                }
                 for (int y = 1; y <= 8; y++) {
                     ChessPiece newPiece = boardCopy.getPiece(new ChessPosition(x, y));
                     if ((newPiece != null) && (newPiece.getTeamColor() == piece.getTeamColor()) && (newPiece.getPieceType() == ChessPiece.PieceType.KING)) {
@@ -73,8 +76,14 @@ public class ChessGame {
                     }
                     }
             }
-            for (int x = 1; x <= 8 && !inCheck; x++) {
-                for (int y = 1; y <= 8 && !inCheck; y++) {
+            for (int x = 1; x <= 8; x++) {
+                if (inCheck) {
+                    break;
+                }
+                for (int y = 1; y <= 8; y++) {
+                    if (inCheck) {
+                        break;
+                    }
                     ChessPosition newSquare = new ChessPosition(x, y);
                     ChessPiece pieceCheck = boardCopy.getPiece(newSquare);
                     if ((pieceCheck != null) && (pieceCheck.getTeamColor() != piece.getTeamColor())) {
