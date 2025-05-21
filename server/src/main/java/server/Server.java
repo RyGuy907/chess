@@ -4,8 +4,9 @@ import spark.Spark;
 import service.*;
 
 public class Server {
-    private final UserService userService   = new UserService();
-    private final AuthService authService   = new AuthService();
+    private final UserService userService = new UserService();
+    private final AuthService authService = new AuthService();
+    private final GameService gameService = new GameService();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -19,6 +20,7 @@ public class Server {
         Spark.post("/session", (request, response) -> new LoginHandler().login(request, response, userService, authService));
         Spark.delete("/session", (request, response) -> new LogoutHandler().logout(request, response, authService));
         Spark.delete("/db", (request, res) -> new ClearHandler().clear(res));
+        Spark.get("/game", (req, res) -> new ListGamesHandler().listGames(req, res, gameService, authService));
 
         Spark.awaitInitialization();
         return Spark.port();

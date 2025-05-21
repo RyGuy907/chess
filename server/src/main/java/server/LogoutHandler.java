@@ -12,7 +12,7 @@ public class LogoutHandler {
         ErrorHandler errors = new ErrorHandler();
         String token = request.headers("authorization");
         try {
-            authService.logout(token);
+            authService.logoutData(token);
             response.status(200);
             return "{}";
         } catch (UnauthorizedException exception) {

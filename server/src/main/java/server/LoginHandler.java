@@ -19,7 +19,7 @@ public class LoginHandler {
             var serializer = new Gson();
             UserData user = serializer.fromJson(request.body(), UserData.class);
             userService.authorizeUser(user);
-            AuthData auth = authService.login(user);
+            AuthData auth = authService.loginData(user);
             response.status(200);
             return serializer.toJson(auth);
 

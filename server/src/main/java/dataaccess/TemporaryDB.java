@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.GameData;
 import model.UserData;
 import model.AuthData;
 
@@ -11,6 +12,7 @@ public class TemporaryDB implements DAOInstance {
 
     private final Map<String, UserData> usersMap = new HashMap<>();
     private final Map<String, AuthData> tokensMap = new HashMap<>();
+    private final Map<Integer, GameData> gamesMap = new HashMap<>();
 
     @Override
     public synchronized UserData getUser(String username) {
@@ -29,11 +31,28 @@ public class TemporaryDB implements DAOInstance {
         tokensMap.put(token, auth);
         return auth;
     }
+    private int i = 1;
+    @Override
+    public synchronized int createGame(GameData game) {
+        int id = i++;
+        gamesMap.put(id, new GameData(id, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
+        return id;
+    }
+    @Override
+    public synchronized GameData getGame(int id) {
+        return gamesMap.get(id);
+    }
 
     @Override
-    public synchronized void clear() {
+    public synchronized GameData[] listGames() {
+        return gamesMap.values().toArray(new GameData[0]);
+    }
+
+    @Override public synchronized void clear() {
         usersMap.clear();
         tokensMap.clear();
+        gamesMap.clear();
+        i = 1;
     }
     @Override public AuthData getAuth(String token) {
         return tokensMap.get(token);

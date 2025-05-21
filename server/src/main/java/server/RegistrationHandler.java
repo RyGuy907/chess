@@ -16,7 +16,7 @@ public class RegistrationHandler {
         try {
             var serializer = new Gson();
             UserData user = userService.registerUser(serializer.fromJson(request.body(), UserData.class));
-            AuthData auth = authService.login(user);
+            AuthData auth = authService.loginData(user);
             response.status(200);
             return serializer.toJson(auth);
         }

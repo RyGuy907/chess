@@ -7,14 +7,19 @@ import model.UserData;
 
 public class AuthService {
 
-    public AuthData login(UserData user) {
+    public AuthData loginData(UserData user) {
         return DAO.createAuth(user.username());
     }
-    public void logout(String authToken) throws UnauthorizedException {
+    public void logoutData(String authToken) throws UnauthorizedException {
         if (DAO.getAuth(authToken) == null) {
             throw new UnauthorizedException("Unauthorized");
         }
         DAO.deleteAuth(authToken);
+    }
+    public void validateToken(String authToken) throws UnauthorizedException {
+        if (DAO.getAuth(authToken) == null) {
+            throw new UnauthorizedException("Unauthorized");
+        }
     }
 
 }

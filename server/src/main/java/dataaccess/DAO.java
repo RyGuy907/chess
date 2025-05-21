@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.GameData;
 import model.UserData;
 import model.AuthData;
 
@@ -22,9 +23,24 @@ public class DAO {
     public static void clear() {
         instance.clear();
     }
+
     public static AuthData getAuth(String token) {
         return instance.getAuth(token);
     }
+
     public static void deleteAuth(String token) {
-        instance.deleteAuth(token); }
+        instance.deleteAuth(token);
+    }
+
+    public static int createGame(GameData g) {
+        return instance.createGame(g);
+    }
+
+    public static GameData getGame(int id) {
+        return instance.getGame(id);
+    }
+
+    public static GameData[] listGames() {
+        return instance.listGames();
+    }
 }
