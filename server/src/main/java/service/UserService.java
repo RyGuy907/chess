@@ -16,6 +16,9 @@ public class UserService {
         DAO.createUser(userdata);
         return DAO.getUser(userdata.username());
     }
+    public void clear() {
+        DAO.clear();
+    }
     public void authorizeUser(UserData userdata) throws BadRequestException, UnauthorizedException {
         if (userdata == null || userdata.username() == null || userdata.username().isBlank() || userdata.password() == null || userdata.password().isBlank()) {
             throw new BadRequestException("Bad Request");
