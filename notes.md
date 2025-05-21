@@ -7,3 +7,6 @@ test
 
 additionally for future reference:
   a lot of the continue; statements can probably be folded into one line and simplified and some piece methods use similar code and could also be further simplified
+
+
+web api now completed, ready for db implementation
