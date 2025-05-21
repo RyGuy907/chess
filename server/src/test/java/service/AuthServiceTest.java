@@ -21,9 +21,9 @@ class AuthServiceTest {
 
     @Test
     void loginDataValid() {
-        UserData u = new UserData("bob", "test", null);
-        DAO.createUser(u);
-        AuthData auth = authService.loginData(u);
+        UserData user = new UserData("bob", "test", null);
+        DAO.createUser(user);
+        AuthData auth = authService.loginData(user);
         assertNotNull(auth.authToken());
         assertEquals("bob", auth.username());
         assertNotNull(DAO.getAuth(auth.authToken()));
@@ -31,8 +31,8 @@ class AuthServiceTest {
 
     @Test
     void loginDataMissing() {
-        UserData ghost = new UserData("joe", "test1", null);
-        AuthData auth = authService.loginData(ghost);
+        UserData user = new UserData("joe", "test1", null);
+        AuthData auth = authService.loginData(user);
         assertNotNull(auth.authToken());
         assertEquals("joe", auth.username());
     }
@@ -40,9 +40,9 @@ class AuthServiceTest {
 
     @Test
     void logoutDataValid() throws UnauthorizedException {
-        UserData u = new UserData("steve", "test3", null);
-        DAO.createUser(u);
-        String token = authService.loginData(u).authToken();
+        UserData user = new UserData("steve", "test3", null);
+        DAO.createUser(user);
+        String token = authService.loginData(user).authToken();
         authService.logoutData(token);
         assertNull(DAO.getAuth(token));
     }
@@ -54,15 +54,23 @@ class AuthServiceTest {
 
     @Test
     void validateTokenValid() throws UnauthorizedException {
-        UserData u = new UserData("mark", "test4", null);
-        DAO.createUser(u);
-        String token = authService.loginData(u).authToken();
-
+        UserData user = new UserData("mark", "test4", null);
+        DAO.createUser(user);
+        String token = authService.loginData(user).authToken();
         authService.validateToken(token);
     }
 
     @Test
     void validateTokenBadToken() {
         assertThrows(UnauthorizedException.class, () -> authService.validateToken("wrong2"));
+    }
+
+    @Test
+    void clearCheck() {
+        UserData user = new UserData("steven", "test5", null);
+        DAO.createUser(user);
+        String token = authService.loginData(user).authToken();
+        authService.clear();
+        assertNull(DAO.getAuth(token));
     }
 }

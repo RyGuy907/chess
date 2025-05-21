@@ -21,5 +21,8 @@ public class AuthService {
             throw new UnauthorizedException("Unauthorized");
         }
     }
+    public void clear() {
+        DAO.clear();
+    }
 
 }

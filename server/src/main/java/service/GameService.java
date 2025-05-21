@@ -52,4 +52,7 @@ public class GameService {
         }
         DAO.updateGame(currentGame);
     }
+    public void clear() {
+        DAO.clear();
+    }
 }
