@@ -61,4 +61,8 @@ public class TemporaryDB implements DAOInstance {
     @Override public void deleteAuth(String token) {
         tokensMap.remove(token);
     }
+    @Override
+    public synchronized void updateGame(GameData game) {
+        gamesMap.put(game.gameID(), game);
+    }
 }

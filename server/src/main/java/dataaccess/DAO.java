@@ -43,4 +43,6 @@ public class DAO {
     public static GameData[] listGames() {
         return instance.listGames();
     }
-}
+    public static void updateGame(GameData g) {
+        instance.updateGame(g); }
+    }

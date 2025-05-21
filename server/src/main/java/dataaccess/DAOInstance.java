@@ -14,4 +14,5 @@ public interface DAOInstance {
     int createGame(GameData game);
     GameData getGame(int gameID);
     GameData[] listGames();
+    void updateGame(GameData game);
 }
