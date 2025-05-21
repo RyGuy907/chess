@@ -8,4 +8,6 @@ public interface DAOInstance {
     void createUser(UserData user);
     AuthData createAuth(String username);
     void clear();
+    AuthData getAuth(String token);
+    void     deleteAuth(String token);
 }

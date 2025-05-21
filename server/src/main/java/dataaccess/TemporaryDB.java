@@ -14,12 +14,11 @@ public class TemporaryDB implements DAOInstance {
 
     @Override
     public synchronized UserData getUser(String username) {
-        return usersMap.get(username);                 // returns null if missing
+        return usersMap.get(username);
     }
 
     @Override
     public synchronized void createUser(UserData user) {
-        // blindly insert; duplicate checks live in the service layer
         usersMap.put(user.username(), user);
     }
 
@@ -35,5 +34,12 @@ public class TemporaryDB implements DAOInstance {
     public synchronized void clear() {
         usersMap.clear();
         tokensMap.clear();
+    }
+    @Override public AuthData getAuth(String token) {
+        return tokensMap.get(token);
+    }
+
+    @Override public void deleteAuth(String token) {
+        tokensMap.remove(token);
     }
 }

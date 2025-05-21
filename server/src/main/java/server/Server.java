@@ -1,26 +1,24 @@
 package server;
 
-import service.AuthService;
-import service.UserService;
-import spark.*;
-import dataaccess.DAO;
+import spark.Spark;
+import service.*;
 
 public class Server {
-    private UserService userService;
-    private AuthService authService;
+    private final UserService userService   = new UserService();
+    private final AuthService authService   = new AuthService();
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
-        this.userService = new UserService();
-        this.authService = new AuthService();
-
         // Register your endpoints and handle exceptions here.
 
         //This line initializes the server and can be removed once you have a functioning endpoint
         Spark.post("/user", (request, response) -> new RegistrationHandler().register(request, response, userService, authService));
-        Spark.delete("/db", (request, response) -> new ClearHandler().clear(request, response));
+        Spark.post("/session", (request, response) -> new LoginHandler().login(request, response, userService, authService));
+        Spark.delete("/session", (request, response) -> new LogoutHandler().logout(request, response, authService));
+        Spark.delete("/db", (request, res) -> new ClearHandler().clear(res));
 
         Spark.awaitInitialization();
         return Spark.port();

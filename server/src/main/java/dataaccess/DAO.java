@@ -22,4 +22,9 @@ public class DAO {
     public static void clear() {
         instance.clear();
     }
+    public static AuthData getAuth(String token) {
+        return instance.getAuth(token);
+    }
+    public static void deleteAuth(String token) {
+        instance.deleteAuth(token); }
 }

@@ -8,7 +8,6 @@ import service.AuthService;
 import service.UserService;
 import spark.Response;
 import spark.Request;
-import server.ErrorHandler;
 
 public class RegistrationHandler {
     public Object register(Request request, Response response, UserService userService, AuthService authService) {
@@ -17,7 +16,7 @@ public class RegistrationHandler {
         try {
             var serializer = new Gson();
             UserData user = userService.registerUser(serializer.fromJson(request.body(), UserData.class));
-            AuthData auth = authService.loginUser(user);
+            AuthData auth = authService.login(user);
             response.status(200);
             return serializer.toJson(auth);
         }
