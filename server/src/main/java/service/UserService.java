@@ -6,7 +6,9 @@ import model.UserData;
 public class UserService {
 
     public UserData registerUser(UserData userdata) throws AlreadyTakenException, BadRequestException {
-        if (userdata == null || userdata.username() == null || userdata.username().isBlank() || userdata.password() == null || userdata.password().isBlank()) {
+        if (userdata == null || userdata.username() == null ||
+                userdata.username().isBlank() || userdata.password() == null ||
+                userdata.password().isBlank()) {
             throw new BadRequestException("Bad Request");
         }
         if (DAO.getUser(userdata.username()) != null) {
@@ -20,7 +22,9 @@ public class UserService {
         DAO.clear();
     }
     public void authorizeUser(UserData userdata) throws BadRequestException, UnauthorizedException {
-        if (userdata == null || userdata.username() == null || userdata.username().isBlank() || userdata.password() == null || userdata.password().isBlank()) {
+        if (userdata == null || userdata.username() == null ||
+                userdata.username().isBlank() || userdata.password() == null ||
+                userdata.password().isBlank()) {
             throw new BadRequestException("Bad Request");
         }
         UserData stored = DAO.getUser(userdata.username());

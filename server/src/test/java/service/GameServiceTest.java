@@ -40,7 +40,7 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames_positive() throws Exception {
+    void listGamesValid() throws Exception {
         UserData user = new UserData("steve", "test2", null);
         DAO.createUser(user);
         String token = authService.loginData(user).authToken();
@@ -48,12 +48,12 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames_unauthorized() {
+    void listGamesInvalid() {
         assertThrows(UnauthorizedException.class, () -> gameService.listGames("wrong"));
     }
 
     @Test
-    void joinGame_positive() throws Exception {
+    void joinGameValid() throws Exception {
         UserData user = new UserData("mark", "test3", null);
         DAO.createUser(user);
         String token = authService.loginData(user).authToken();
@@ -63,7 +63,7 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGame_alreadyTaken() throws Exception {
+    void joinGameInvalid() throws Exception {
         UserData one = new UserData("jim", "test4", null);
         UserData two = new UserData("jones", "test5", null);
         DAO.createUser(one);
