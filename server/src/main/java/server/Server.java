@@ -19,8 +19,9 @@ public class Server {
         Spark.post("/user", (request, response) -> new RegistrationHandler().register(request, response, userService, authService));
         Spark.post("/session", (request, response) -> new LoginHandler().login(request, response, userService, authService));
         Spark.delete("/session", (request, response) -> new LogoutHandler().logout(request, response, authService));
-        Spark.delete("/db", (request, res) -> new ClearHandler().clear(res));
-        Spark.get("/game", (req, res) -> new ListGamesHandler().listGames(req, res, gameService, authService));
+        Spark.delete("/db", (request, response) -> new ClearHandler().clear(response));
+        Spark.get("/game", (request, response) -> new ListGamesHandler().listGames(request, response, gameService, authService));
+        Spark.post("/game", (request, response) -> new CreateGameHandler().createGame(request, response, gameService, authService));
 
         Spark.awaitInitialization();
         return Spark.port();
