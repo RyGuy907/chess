@@ -5,14 +5,14 @@ import model.UserData;
 import model.AuthData;
 
 public interface DAOInstance {
-    UserData getUser(String username);
-    void createUser(UserData user);
-    AuthData createAuth(String username);
-    void clear();
-    AuthData getAuth(String token);
-    void deleteAuth(String token);
-    int createGame(GameData game);
-    GameData getGame(int gameID);
-    GameData[] listGames();
-    void updateGame(GameData game);
+    UserData getUser(String username) throws DataAccessException;
+    void createUser(UserData user) throws DataAccessException;
+    AuthData createAuth(String username) throws DataAccessException;
+    void clear() throws DataAccessException;
+    AuthData getAuth(String token) throws DataAccessException;
+    void deleteAuth(String token) throws DataAccessException;
+    int createGame(GameData game) throws DataAccessException;
+    GameData getGame(int gameID) throws DataAccessException;
+    GameData[] listGames() throws DataAccessException;
+    void updateGame(GameData game) throws DataAccessException;
 }
