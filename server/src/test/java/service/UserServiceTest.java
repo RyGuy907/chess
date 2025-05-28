@@ -12,7 +12,7 @@ class UserServiceTest {
     private UserService userService;
 
     @BeforeEach
-    void setup() {
+    void setup() throws DataAccessException {
         DAO.clear();
         userService = new UserService();
     }

@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DAO;
 import dataaccess.UnauthorizedException;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,13 +15,13 @@ class AuthServiceTest {
     private AuthService authService;
 
     @BeforeEach
-    void setup() {
+    void setup() throws DataAccessException {
         DAO.clear();
         authService = new AuthService();
     }
 
     @Test
-    void loginDataValid() {
+    void loginDataValid() throws DataAccessException {
         UserData user = new UserData("bob", "test", null);
         DAO.createUser(user);
         AuthData auth = authService.loginData(user);
@@ -30,16 +31,15 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginDataMissing() {
+    void loginDataMissing() throws DataAccessException {
         UserData user = new UserData("joe", "test1", null);
         AuthData auth = authService.loginData(user);
         assertNotNull(auth.authToken());
         assertEquals("joe", auth.username());
     }
 
-
     @Test
-    void logoutDataValid() throws UnauthorizedException {
+    void logoutDataValid() throws UnauthorizedException, DataAccessException {
         UserData user = new UserData("steve", "test3", null);
         DAO.createUser(user);
         String token = authService.loginData(user).authToken();
@@ -49,11 +49,12 @@ class AuthServiceTest {
 
     @Test
     void logoutDataBadToken() {
-        assertThrows(UnauthorizedException.class, () -> authService.logoutData("wrong"));
+        assertThrows(UnauthorizedException.class,
+                () -> authService.logoutData("wrong"));
     }
 
     @Test
-    void validateTokenValid() throws UnauthorizedException {
+    void validateTokenValid() throws UnauthorizedException, DataAccessException {
         UserData user = new UserData("mark", "test4", null);
         DAO.createUser(user);
         String token = authService.loginData(user).authToken();
@@ -62,11 +63,12 @@ class AuthServiceTest {
 
     @Test
     void validateTokenBadToken() {
-        assertThrows(UnauthorizedException.class, () -> authService.validateToken("wrong2"));
+        assertThrows(UnauthorizedException.class,
+                () -> authService.validateToken("wrong2"));
     }
 
     @Test
-    void clearCheck() {
+    void clearCheck() throws DataAccessException {
         UserData user = new UserData("steven", "test5", null);
         DAO.createUser(user);
         String token = authService.loginData(user).authToken();
