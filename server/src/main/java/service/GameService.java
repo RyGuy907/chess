@@ -4,16 +4,17 @@ import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
 import dataaccess.DAO;
 import dataaccess.UnauthorizedException;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 
 public class GameService {
     private final AuthService auth = new AuthService();
-    public GameData[] listGames(String authToken) throws UnauthorizedException {
+    public GameData[] listGames(String authToken) throws UnauthorizedException, DataAccessException {
         auth.validateToken(authToken);
         return DAO.listGames();
     }
-    public int createGame(String authToken, String gameName) throws BadRequestException, UnauthorizedException {
+    public int createGame(String authToken, String gameName) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (gameName == null || gameName.isBlank()) {
             throw new BadRequestException("Bad Request");
         }
@@ -22,7 +23,7 @@ public class GameService {
         GameData game = new GameData(0, null, null, gameName, null);
         return DAO.createGame(game);
     }
-    public void joinGame(String token, String color, Integer gameID) throws BadRequestException, UnauthorizedException, AlreadyTakenException {
+    public void joinGame(String token, String color, Integer gameID) throws BadRequestException, UnauthorizedException, AlreadyTakenException, DataAccessException {
         if (color == null || gameID == null) {
             throw new BadRequestException("Bad Request");
         }
@@ -52,7 +53,7 @@ public class GameService {
         }
         DAO.updateGame(currentGame);
     }
-    public void clear() {
+    public void clear() throws DataAccessException {
         DAO.clear();
     }
 }

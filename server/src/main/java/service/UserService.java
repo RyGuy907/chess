@@ -2,10 +2,11 @@ package service;
 
 import dataaccess.*;
 import model.UserData;
+import dataaccess.DataAccessException;
 
 public class UserService {
 
-    public UserData registerUser(UserData userdata) throws AlreadyTakenException, BadRequestException {
+    public UserData registerUser(UserData userdata) throws AlreadyTakenException, BadRequestException, DataAccessException {
         if (userdata == null || userdata.username() == null ||
                 userdata.username().isBlank() || userdata.password() == null ||
                 userdata.password().isBlank()) {
@@ -18,10 +19,10 @@ public class UserService {
         DAO.createUser(userdata);
         return DAO.getUser(userdata.username());
     }
-    public void clear() {
+    public void clear() throws DataAccessException {
         DAO.clear();
     }
-    public void authorizeUser(UserData userdata) throws BadRequestException, UnauthorizedException {
+    public void authorizeUser(UserData userdata) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (userdata == null || userdata.username() == null ||
                 userdata.username().isBlank() || userdata.password() == null ||
                 userdata.password().isBlank()) {

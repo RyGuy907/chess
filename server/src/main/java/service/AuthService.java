@@ -2,26 +2,27 @@ package service;
 
 import dataaccess.UnauthorizedException;
 import dataaccess.DAO;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
 public class AuthService {
 
-    public AuthData loginData(UserData user) {
+    public AuthData loginData(UserData user) throws DataAccessException {
         return DAO.createAuth(user.username());
     }
-    public void logoutData(String authToken) throws UnauthorizedException {
+    public void logoutData(String authToken) throws UnauthorizedException, DataAccessException {
         if (DAO.getAuth(authToken) == null) {
             throw new UnauthorizedException("Unauthorized");
         }
         DAO.deleteAuth(authToken);
     }
-    public void validateToken(String authToken) throws UnauthorizedException {
+    public void validateToken(String authToken) throws UnauthorizedException, DataAccessException {
         if (DAO.getAuth(authToken) == null) {
             throw new UnauthorizedException("Unauthorized");
         }
     }
-    public void clear() {
+    public void clear() throws DataAccessException {
         DAO.clear();
     }
 
