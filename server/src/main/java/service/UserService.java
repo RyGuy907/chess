@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.UserData;
 import dataaccess.DataAccessException;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
 
@@ -29,7 +30,7 @@ public class UserService {
             throw new BadRequestException("Bad Request");
         }
         UserData stored = DAO.getUser(userdata.username());
-        if (stored == null || !stored.password().equals(userdata.password())) {
+        if (stored == null || !BCrypt.checkpw(userdata.password(), stored.password())) {
             throw new UnauthorizedException("Unauthorized");
         }
     }
