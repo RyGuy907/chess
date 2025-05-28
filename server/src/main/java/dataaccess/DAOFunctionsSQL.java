@@ -11,7 +11,7 @@ import java.sql.*;
 import java.util.*;
 
 public class DAOFunctionsSQL implements DAOInstance {
-    private static final Gson gson = new Gson();
+    private static final Gson SERIALIZER = new Gson();
 
     public DAOFunctionsSQL() throws DataAccessException {
         DatabaseManager.createDatabase();
@@ -102,10 +102,10 @@ public class DAOFunctionsSQL implements DAOInstance {
              var ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             try (var rs = ps.executeQuery()) {
-                if (rs.next())
+                if (rs.next()) {
                     return new UserData(rs.getString("username"),
                             rs.getString("password"),
-                            rs.getString("email"));
+                            rs.getString("email")); }
             }
             return null;
         } catch (SQLException exception) {
@@ -148,7 +148,7 @@ public class DAOFunctionsSQL implements DAOInstance {
                 template.whiteUsername(),
                 template.blackUsername(),
                 template.gameName(),
-                gson.toJson(game));
+                SERIALIZER.toJson(game));
         return id;
     }
 
@@ -160,7 +160,7 @@ public class DAOFunctionsSQL implements DAOInstance {
             ps.setInt(1, id);
             try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    ChessGame game = gson.fromJson(rs.getString("chessGame"), ChessGame.class);
+                    ChessGame game = SERIALIZER.fromJson(rs.getString("chessGame"), ChessGame.class);
                     return new GameData(
                             id, rs.getString("whiteUsername"), rs.getString("blackUsername"),
                             rs.getString("gameName"), game);
@@ -198,7 +198,7 @@ public class DAOFunctionsSQL implements DAOInstance {
                 SET whiteUsername=?, blackUsername=?, gameName=?, chessGame=?
                 WHERE gameID=?""",
                 game.whiteUsername(), game.blackUsername(), game.gameName(),
-                gson.toJson(game.game()), game.gameID());
+                SERIALIZER.toJson(game.game()), game.gameID());
     }
 
     @Override

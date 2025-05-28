@@ -23,7 +23,8 @@ public class GameService {
         GameData game = new GameData(0, null, null, gameName, null);
         return DAO.createGame(game);
     }
-    public void joinGame(String token, String color, Integer gameID) throws BadRequestException, UnauthorizedException, AlreadyTakenException, DataAccessException {
+    public void joinGame(String token, String color, Integer gameID) throws BadRequestException, UnauthorizedException,
+            AlreadyTakenException, DataAccessException {
         if (color == null || gameID == null) {
             throw new BadRequestException("Bad Request");
         }
