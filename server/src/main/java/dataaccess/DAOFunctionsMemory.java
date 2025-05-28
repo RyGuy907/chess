@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class TemporaryDB implements DAOInstance {
+public class DAOFunctionsMemory implements DAOInstance {
 
     private final Map<String, UserData> usersMap = new HashMap<>();
     private final Map<String, AuthData> tokensMap = new HashMap<>();
