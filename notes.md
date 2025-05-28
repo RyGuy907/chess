@@ -12,3 +12,6 @@ additionally for future reference:
 web api now completed, ready for db implementation    
 
 installed mysql
+
+
+database phase fully implemented 
