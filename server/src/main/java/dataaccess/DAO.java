@@ -5,8 +5,19 @@ import model.UserData;
 import model.AuthData;
 
 public class DAO {
+    private static final DAOInstance INSTANCE;
+    static {
+        try {
+            INSTANCE = new DAOFunctionsSQL();
+        } catch (DataAccessException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+    private DAO() { }
 
-    private static final DAOInstance INSTANCE = new DAOFunctionsSQL();
+    public static DAOInstance get() {
+        return INSTANCE;
+    }
 
     public static UserData getUser(String username) throws DataAccessException  {
         return INSTANCE.getUser(username);
