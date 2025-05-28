@@ -24,7 +24,7 @@ public class DAOFunctionsSQL implements DAOInstance {
                 CREATE TABLE IF NOT EXISTS User (
                   username VARCHAR(50) PRIMARY KEY,
                   password CHAR(60) NOT NULL,
-                  email VARCHAR(256) NOT NULL
+                  email VARCHAR(256)
                 )
             """);
             statement.executeUpdate("""
