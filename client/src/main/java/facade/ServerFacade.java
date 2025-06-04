@@ -63,7 +63,9 @@ public class ServerFacade {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(new URI(address + path))
                 .method(method, HttpRequest.BodyPublishers.noBody());
-        if (token != null) builder.header("Authorization", token);
+        if (token != null) {
+            builder.header("Authorization", token);
+        }
         if (body != null) {
             builder.header("Content-Type", "application/json")
                     .method(method, HttpRequest.BodyPublishers.ofString(serializer.toJson(body),
