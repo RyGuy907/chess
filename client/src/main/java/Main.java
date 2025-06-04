@@ -31,7 +31,7 @@ public class Main {
                     handleAfter(parts);
                 }
             } catch (Exception exception) {
-                System.out.println("Error: Invalid, nonexistent, or taken credentials (type 'help')");
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Invalid, nonexistent, or taken credentials (type 'help')" + EscapeSequences.RESET_TEXT_COLOR);
             }
         }
     }
@@ -57,31 +57,31 @@ public class Main {
     }
     private static void register(String username,String password,String email) throws Exception {
         session = server.register(username,password,email);
-        System.out.println("Successfully registered");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully registered" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void login(String username,String password) throws Exception {
         session = server.login(username,password);
-        System.out.println("Successfully logged in");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully logged in" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void logout() throws Exception {
         server.logout(session.authToken());
         session=null; indexMap.clear();
-        System.out.println("Successfully logged out");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully logged out" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void createGame(String name) throws Exception {
         server.createGame(name, session.authToken());
-        System.out.println("Successfully created");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully created" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void listGames() throws Exception {
         GameData[] g=server.listGames(session.authToken());
         indexMap.clear();
         for(int i=0;i<g.length;i++){
             indexMap.put(i+1,g[i]);
-            System.out.printf("%d. %s  [white=%s  black=%s]%n",i+1,g[i].gameName(),
+            System.out.printf(EscapeSequences.SET_TEXT_COLOR_YELLOW + "%d. %s  [white=%s  black=%s]%n",i+1,g[i].gameName(),
                     Objects.toString(g[i].whiteUsername()," "),
-                    Objects.toString(g[i].blackUsername()," "));
+                    Objects.toString(g[i].blackUsername()," ") + EscapeSequences.RESET_TEXT_COLOR);
         }
-        if(g.length==0) System.out.println("No active games");
+        if(g.length==0) System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA +"No active games" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void playGame(int id,String color) throws Exception {
         GameData game=indexMap.get(id); if(game==null){
@@ -96,31 +96,31 @@ public class Main {
         drawBoard(new ChessGame(), ChessGame.TeamColor.WHITE);
     }
     private static void loggedOutHelp() {
-        System.out.println("""
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE +"""
                 register <username> <password> <email>
                 login    <username> <password>
                 help
-                quit""");
+                quit""" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void loggedInHelp() {
-        System.out.println("""
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE +"""
                 create  <game‑name>
                 list
-                play    <index> <white|black>
-                observe <index>
+                play    <game-index> <white|black>
+                observe <game-index>
                 logout
-                help""");
+                help""" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static void printError() {
-        System.out.println("Error: Invalid syntax (type 'help')");
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Invalid syntax (type 'help')" + EscapeSequences.RESET_TEXT_COLOR);
     }
     private static String joinRest(String[] a,int start){
         return String.join(" ",Arrays.copyOfRange(a,start,a.length));
     }
 
     private static void drawBoard(ChessGame game, ChessGame.TeamColor view) {
-        String light = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-        String dark  = EscapeSequences.SET_BG_COLOR_DARK_GREY;
+        String dark = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+        String light  = EscapeSequences.SET_BG_COLOR_DARK_GREY;
         String reset = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
         Map<ChessPiece.PieceType,String> whiteMap = Map.of(ChessPiece.PieceType.KING, EscapeSequences.WHITE_KING,
                 ChessPiece.PieceType.QUEEN, EscapeSequences.WHITE_QUEEN,
@@ -144,7 +144,7 @@ public class Main {
             for (int c = 0; c < 8; c++) {
                 int col = colStart + c * colInc;
                 boolean isLight = ((row + col) & 1) == 0;
-                System.out.print(isLight ? light : dark);
+                System.out.print(isLight ? dark : light);
                 ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
                 if (piece == null) System.out.print(EMPTY);
                 else {
