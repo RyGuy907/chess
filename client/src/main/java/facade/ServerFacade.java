@@ -1,3 +1,5 @@
+package facade;
+
 import chess.ChessGame;
 import com.google.gson.*;
 import model.AuthData;
@@ -14,8 +16,8 @@ public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson serializer = new Gson();
 
-    public ServerFacade(String host, int port) {
-        address = "http://" + host + ":" + port;
+    public ServerFacade(int port) {
+        address = "http://" + "localhost" + ":" + port;
     }
 
     public AuthData register(String username, String password, String email) throws Exception {
