@@ -8,6 +8,8 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 
+import java.util.Objects;
+
 public class GameService {
     private final AuthService auth = new AuthService();
     public GameData[] listGames(String authToken) throws UnauthorizedException, DataAccessException {
@@ -26,6 +28,21 @@ public class GameService {
 
     public GameData getGame(int gameID) throws DataAccessException  {
         return DAO.getGame(gameID);
+    }
+
+    public void updateGame(GameData game) throws DataAccessException {
+        DAO.updateGame(game);
+    }
+
+    public void leaveGame(String username, int gameID) throws DataAccessException {
+        GameData g = DAO.getGame(gameID);
+        if (g == null) return;
+        if (Objects.equals(g.whiteUsername(), username)) {
+            g = new GameData(g.gameID(), null, g.blackUsername(), g.gameName(), g.game());
+        } else if (Objects.equals(g.blackUsername(), username)) {
+            g = new GameData(g.gameID(), g.whiteUsername(), null, g.gameName(), g.game());
+        }
+        DAO.updateGame(g);
     }
     public void joinGame(String token, String color, Integer gameID) throws BadRequestException, UnauthorizedException,
             AlreadyTakenException, DataAccessException {
