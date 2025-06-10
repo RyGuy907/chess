@@ -166,11 +166,15 @@ public class Main {
         ChessGame.TeamColor c;
         if (color.equalsIgnoreCase("white")) {
             c = ChessGame.TeamColor.WHITE;
-        } else {
+            server.joinGame(game.gameID(), c, session.authToken());
+            drawBoard(new ChessGame(), c);
+        } else if (color.equalsIgnoreCase("black")) {
             c = ChessGame.TeamColor.BLACK;
+            server.joinGame(game.gameID(), c, session.authToken());
+            drawBoard(new ChessGame(), c);
+        } else {
+            printError();
         }
-        server.joinGame(game.gameID(), c, session.authToken());
-        drawBoard(new ChessGame(), c);
     }
 
     private static void observeGame(int id) throws Exception {
@@ -209,8 +213,8 @@ public class Main {
     }
 
     private static void drawBoard(ChessGame game, ChessGame.TeamColor view) {
-        String dark = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-        String light = EscapeSequences.SET_BG_COLOR_DARK_GREY;
+        String light = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+        String dark = EscapeSequences.SET_BG_COLOR_DARK_GREY;
         String reset = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
         Map<ChessPiece.PieceType, String> whiteMap = Map.of(ChessPiece.PieceType.KING, EscapeSequences.WHITE_KING,
                 ChessPiece.PieceType.QUEEN, EscapeSequences.WHITE_QUEEN,
