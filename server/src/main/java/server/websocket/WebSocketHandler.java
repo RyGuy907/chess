@@ -53,12 +53,12 @@ public class WebSocketHandler {
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
-        System.out.println("WebSocket closed: " + reason);
+        closeSession(session);
     }
 
     @OnWebSocketError
     public void onError(Session session, Throwable error) {
-        error.printStackTrace();
+        closeSession(session);
     }
 
     private void connectHandler(UserGameCommand command, Session session) throws IOException, DataAccessException, UnauthorizedException {
@@ -111,5 +111,34 @@ public class WebSocketHandler {
             return "black";
         }
         return "observer";
+    }
+
+    private void leaveHandler(UserGameCommand command, Session session) throws Exception {
+        String user = authService.getUsername(command.getAuthToken());
+        Integer game = gameToken.get(command.getAuthToken());
+        if (user != null && game != null) {
+            gameService.leaveGame(user, game);
+            sendOut(game, command.getAuthToken(),
+                    new NotificationMessage(user + " left the game"));
+        }
+        closeConnection(command.getAuthToken(), session);
+    }
+    private void closeSession(Session session) {
+        String token = sessionsToken.entrySet().stream()
+                .filter(e -> e.getValue().equals(session))
+                .map(Map.Entry::getKey)
+                .findFirst().orElse(null);
+        if (token != null) closeConnection(token, session);
+    }
+    private void closeConnection(String token, Session session) {
+        sessionsToken.remove(token);
+        Integer gid = gameToken.remove(token);
+        if (gid != null) {
+            Set<String> set = tokensGame.get(gid);
+            if (set != null) set.remove(token);
+        }
+        try {
+            session.close();
+        } catch (Exception ignored) {}
     }
 }
