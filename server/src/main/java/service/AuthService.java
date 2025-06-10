@@ -17,6 +17,15 @@ public class AuthService {
         }
         DAO.deleteAuth(authToken);
     }
+    public String getUsername(String authToken) throws UnauthorizedException, DataAccessException {
+        AuthData auth = DAO.getAuth(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException ("Unauthorized");
+        } else {
+            return auth.username();
+        }
+    }
+
     public void validateToken(String authToken) throws UnauthorizedException, DataAccessException {
         if (DAO.getAuth(authToken) == null) {
             throw new UnauthorizedException("Unauthorized");
