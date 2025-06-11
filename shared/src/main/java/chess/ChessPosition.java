@@ -34,6 +34,18 @@ public class ChessPosition {
         return col;
     }
 
+    public boolean isValid() {
+        boolean validCol = this.col >= 1;
+        if (validCol) {
+            validCol = this.col <= 8;
+        }
+        boolean validRow = this.row >= 1;
+        if (validRow) {
+            validRow = this.row <= 8;
+        }
+        return validCol && validRow;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
