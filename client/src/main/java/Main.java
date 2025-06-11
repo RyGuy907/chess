@@ -40,7 +40,7 @@ public class Main {
                 }
             } catch (Exception exception) {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
-                        "Error: Invalid, nonexistent, or taken credentials (type 'help')"
+                        "Error in command handler: Invalid, nonexistent, or taken credentials (type 'help')"
                         + EscapeSequences.RESET_TEXT_COLOR);
             }
         }
@@ -48,12 +48,8 @@ public class Main {
 
     private static void handleBefore(String[] args) throws Exception {
         switch (args[0].toLowerCase()) {
-            case "help" -> {
-                loggedOutHelp();
-            }
-            case "quit" -> {
-                System.exit(0);
-            }
+            case "help" -> loggedOutHelp();
+            case "quit" -> System.exit(0);
             case "login" -> {
                 if (args.length == 3) {
                     login(args[1], args[2]);
@@ -68,17 +64,13 @@ public class Main {
                     printError();
                 }
             }
-            default -> {
-                printError();
-            }
+            default -> printError();
         }
     }
 
     private static void handleAfter(String[] args) throws Exception {
         switch (args[0].toLowerCase()) {
-            case "help" -> {
-                loggedInHelp();
-            }
+            case "help" -> loggedInHelp();
             case "logout" -> {
                 if (args.length == 1) {
                     logout();
@@ -114,9 +106,7 @@ public class Main {
                     printError();
                 }
             }
-            default -> {
-                printError();
-            }
+            default -> printError();
         }
     }
 
@@ -159,7 +149,11 @@ public class Main {
     private static void playGame(int index, String colorString) {
         try {
             GameData game = MAP.get(index);
-            if (game == null) { printError(); return; }
+            if (game == null) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
+                        "Error in playGame: No game found at that index" + EscapeSequences.RESET_TEXT_COLOR);
+                return;
+            }
             ChessGame.TeamColor color;
             if (colorString.equalsIgnoreCase("white")) {
                 color = ChessGame.TeamColor.WHITE;
@@ -167,7 +161,7 @@ public class Main {
                 color = ChessGame.TeamColor.BLACK;
             } else {
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
-                        "Error: Color must be white or black" +
+                        "Error in playGame: Color must be white or black" +
                         EscapeSequences.RESET_TEXT_COLOR);
                 return;
             }
@@ -178,7 +172,7 @@ public class Main {
                     .beginSession();
         } catch (Exception ex) {
             System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
-                    "Error: Failed to join game (" + ex.getMessage() + ")" +
+                    "Error in playGame: Failed to join game (" + ex.getMessage() + ")" +
                     EscapeSequences.RESET_TEXT_COLOR);
         }
     }
@@ -186,7 +180,11 @@ public class Main {
     private static void observeGame(int index) {
         try {
             GameData game = MAP.get(index);
-            if (game == null) { printError(); return; }
+            if (game == null) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
+                        "Error in observeGame: No game found at that index" + EscapeSequences.RESET_TEXT_COLOR);
+                return;
+            }
             System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN +
                     "Successfully observing" +
                     EscapeSequences.RESET_TEXT_COLOR);
@@ -197,7 +195,7 @@ public class Main {
 
         } catch (Exception ex) {
             System.out.println(EscapeSequences.SET_TEXT_COLOR_RED +
-                    "Error: Failed to observe game (" + ex.getMessage() + ")" +
+                    "Error in observeGame: Failed to observe game (" + ex.getMessage() + ")" +
                     EscapeSequences.RESET_TEXT_COLOR);
         }
     }
@@ -227,5 +225,4 @@ public class Main {
     private static String joinRest(String[] a, int start) {
         return String.join(" ", Arrays.copyOfRange(a, start, a.length));
     }
-
 }
