@@ -15,10 +15,12 @@ import java.util.Objects;
 
 public class GameService {
     private final AuthService auth = new AuthService();
+
     public GameData[] listGames(String authToken) throws UnauthorizedException, DataAccessException {
         auth.validateToken(authToken);
         return DAO.listGames();
     }
+
     public int createGame(String authToken, String gameName) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (gameName == null || gameName.isBlank()) {
             throw new BadRequestException("Bad Request");
@@ -29,26 +31,30 @@ public class GameService {
         return DAO.createGame(game);
     }
 
-    public GameData getGame(int gameID) throws DataAccessException  {
+    public GameData getGame(int gameID) throws DataAccessException {
         return DAO.getGame(gameID);
     }
 
     public void updateGame(GameData game) throws DataAccessException {
         DAO.updateGame(game);
     }
+
     public void makeMove(int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
         GameData g = DAO.getGame(gameID);
         ChessGame game = g.game();
-        if (game.gameOver() == true) {
+        if (game.gameOver()) {
             throw new InvalidMoveException();
         }
         game.makeMove(move);
         DAO.updateGame(new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(),
                 g.gameName(), game));
     }
+
     public void resign(int gameID, String username) throws DataAccessException {
         GameData g = DAO.getGame(gameID);
-        if (g == null) return;
+        if (g == null) {
+            return;
+        }
         ChessGame game = g.game();
         String winner;
         if (username.equals(g.whiteUsername())) {
@@ -67,7 +73,9 @@ public class GameService {
 
     public void leaveGame(String username, int gameID) throws DataAccessException {
         GameData g = DAO.getGame(gameID);
-        if (g == null) return;
+        if (g == null) {
+            return;
+        }
         if (Objects.equals(g.whiteUsername(), username)) {
             g = new GameData(g.gameID(), null, g.blackUsername(), g.gameName(), g.game());
         } else if (Objects.equals(g.blackUsername(), username)) {
@@ -75,6 +83,7 @@ public class GameService {
         }
         DAO.updateGame(g);
     }
+
     public void joinGame(String token, String color, Integer gameID) throws BadRequestException, UnauthorizedException,
             AlreadyTakenException, DataAccessException {
         if (color == null || gameID == null) {
@@ -106,6 +115,7 @@ public class GameService {
         }
         DAO.updateGame(currentGame);
     }
+
     public void clear() throws DataAccessException {
         DAO.clear();
     }

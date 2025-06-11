@@ -61,16 +61,7 @@ public class InGame extends Endpoint {
 
             switch (userInput) {
                 case "help":
-                    if (playerColor != null) {
-                        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + """
-                    move      <from> <to>
-                    resign                """);
-                    }
-                    System.out.println("""
-                    redraw
-                    highlight <from>
-                    leave
-                    help""" + EscapeSequences.RESET_TEXT_COLOR);
+                    printHelp();
                     break;
 
                 case "redraw":
@@ -85,54 +76,67 @@ public class InGame extends Endpoint {
                     if (playerColor != null) {
                         processMove(scanner);
                     } else {
-                        System.out.println(
-                                EscapeSequences.SET_TEXT_COLOR_RED
-                                        + "Error: Command not recognized (type 'help')"
-                                        + EscapeSequences.RESET_TEXT_COLOR
-                        );
+                        printUnrecognizedCommand();
                     }
                     break;
 
                 case "resign":
-                    if (playerColor != null) {
-                        System.out.print(EscapeSequences.SET_TEXT_COLOR_YELLOW + "Confirm resign [y/n]: " + EscapeSequences.RESET_TEXT_COLOR);
-                        try {
-                            String answer = new Scanner(System.in).next();
-                            if (answer.toLowerCase().charAt(0) == 'y') {
-                                wsSession.getBasicRemote().sendText(serializer.toJson(new ResignCommand(token, sessionId)));
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    } else {
-                        System.out.println(
-                                EscapeSequences.SET_TEXT_COLOR_RED
-                                        + "Error: Command not recognized (type 'help')"
-                                        + EscapeSequences.RESET_TEXT_COLOR
-                        );
-                    }
+                    handleResign();
                     break;
 
                 case "highlight":
-                    try {
-                        String pos = scanner.next();
-                        ChessPosition position = convertToPosition(pos);
-                        if (currentGame.getBoard().getPiece(position) == null) {
-                            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: No piece present" + EscapeSequences.RESET_TEXT_COLOR);
-                        } else {
-                            drawBoard(position);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Invalid usage" + EscapeSequences.RESET_TEXT_COLOR);
-                    }
+                    handleHighlight(scanner);
                     break;
 
                 default:
-                    System.out.println(
-                            EscapeSequences.SET_TEXT_COLOR_RED
-                                    + "Error: Command not recognized (type 'help')"
-                                    + EscapeSequences.RESET_TEXT_COLOR
-                    );
+                    printUnrecognizedCommand();
             }
+        }
+    }
+
+    private void printHelp() {
+        if (playerColor != null) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + """
+                    move      <from> <to>
+                    resign                """);
+        }
+        System.out.println("""
+                    redraw
+                    highlight <from>
+                    leave
+                    help""" + EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    private void printUnrecognizedCommand() {
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Command not recognized (type 'help')" + EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    private void handleResign() {
+        if (playerColor != null) {
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_YELLOW + "Confirm resign <y/n>: " + EscapeSequences.RESET_TEXT_COLOR);
+            try {
+                String answer = new Scanner(System.in).next();
+                if (answer.toLowerCase().charAt(0) == 'y') {
+                    wsSession.getBasicRemote().sendText(serializer.toJson(new ResignCommand(token, sessionId)));
+                }
+            } catch (Exception ignored) {
+            }
+        } else {
+            printUnrecognizedCommand();
+        }
+    }
+
+    private void handleHighlight(Scanner scanner) {
+        try {
+            String pos = scanner.next();
+            ChessPosition position = convertToPosition(pos);
+            if (currentGame.getBoard().getPiece(position) == null) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: No piece present" + EscapeSequences.RESET_TEXT_COLOR);
+            } else {
+                drawBoard(position);
+            }
+        } catch (Exception e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Invalid usage" + EscapeSequences.RESET_TEXT_COLOR);
         }
     }
     private void processMove(Scanner scanner) {
@@ -323,11 +327,13 @@ public class InGame extends Endpoint {
         switch (msg.getServerMessageType()) {
             case NOTIFICATION -> {
                 String note = serializer.fromJson(json, NotificationMessage.class).getMessage();
-                System.out.println("\r" + EscapeSequences.ERASE_LINE + EscapeSequences.SET_TEXT_COLOR_MAGENTA + note + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println("\r" + EscapeSequences.ERASE_LINE + EscapeSequences.SET_TEXT_COLOR_MAGENTA + note +
+                        EscapeSequences.RESET_TEXT_COLOR);
             }
             case ERROR -> {
                 String error = serializer.fromJson(json, ErrorMessage.class).getErrorMessage();
-                System.out.println("\r" + EscapeSequences.ERASE_LINE + EscapeSequences.SET_TEXT_COLOR_RED + error + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println("\r" + EscapeSequences.ERASE_LINE + EscapeSequences.SET_TEXT_COLOR_RED + error +
+                        EscapeSequences.RESET_TEXT_COLOR);
             }
             case LOAD_GAME -> {
                 LoadGameMessage loadMsg = serializer.fromJson(json, LoadGameMessage.class);
