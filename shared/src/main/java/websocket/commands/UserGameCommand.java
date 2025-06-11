@@ -17,7 +17,7 @@ public class UserGameCommand {
     private String authToken;
 
     private Integer gameID;
-    private ChessMove move;
+    private final ChessMove move;
 
     public UserGameCommand(CommandType commandType, String authToken, Integer gameID, ChessMove move) {
         this.commandType = commandType;
