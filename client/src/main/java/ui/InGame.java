@@ -100,7 +100,7 @@ public class InGame extends Endpoint {
                 move      <from> <to>
                 resign                """);
         }
-        System.out.println("""
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + """
                 redraw
                 highlight <from>
                 leave

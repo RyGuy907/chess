@@ -1,8 +1,6 @@
 package server.websocket;
 
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
@@ -95,10 +93,8 @@ public class WebSocketHandler {
         Set<Session> room = gameRooms.computeIfAbsent(cmd.getGameID(), k -> ConcurrentHashMap.newKeySet());
         String role = determineRole(player, info);
         String joinedMessage = player + " joined as " + role;
-        for (Session peer : room) {
-            notificationHandler(peer, joinedMessage);
-        }
         room.add(wsSession);
+        broadcast(cmd.getGameID(), joinedMessage);
         loadGameHandler(wsSession, game);
     }
 
@@ -109,11 +105,9 @@ public class WebSocketHandler {
 
         Set<Session> room = gameRooms.get(cmd.getGameID());
         if (room != null) {
+            broadcast(cmd.getGameID(), player + " left the game");
             room.remove(wsSession);
-            String leaveMsg = player + " left the game";
-            for (Session peer : room) {
-                notificationHandler(peer, leaveMsg);
-            }
+            wsSession.close();
         }
         wsSession.close();
     }
@@ -154,10 +148,9 @@ public class WebSocketHandler {
         if (room != null) {
             for (Session peer : room) {
                 loadGameHandler(peer, board);
-                if (!peer.equals(wsSession)) {
-                    notificationHandler(peer, player + " moved");
-                }
             }
+            broadcast(cmd.getGameID(),
+                    player + " moved " + formatMove(cmd.getMove()));
         }
         updateGameStatus(updated);
     }
@@ -181,9 +174,7 @@ public class WebSocketHandler {
         gameSvc.resign(cmd.getGameID(), player);
         Set<Session> room = gameRooms.get(cmd.getGameID());
         if (room != null) {
-            for (Session peer : room) {
-                notificationHandler(peer, player + " resigned");
-            }
+            broadcast(cmd.getGameID(), player + " resigned");
         }
     }
 
@@ -207,9 +198,7 @@ public class WebSocketHandler {
             game.setGameOver(true);
         }
         if (message != null) {
-            for (Session s : gameRooms.get(info.gameID())) {
-                notificationHandler(s, message);
-            }
+            broadcast(info.gameID(), message);
         }
         try {
             gameSvc.updateGame(new GameData(
@@ -244,5 +233,37 @@ public class WebSocketHandler {
         } else {
             return "observer";
         }
+    }
+    private void broadcast(int gameID, String note) {
+        Set<Session> room = gameRooms.get(gameID);
+        if (room != null) {
+            for (Session peer : room) {
+                notificationHandler(peer, note);
+            }
+        }
+    }
+    private String formatMove(ChessMove move) {
+        return posToString(move.getStartPosition()) + "-" +
+                posToString(move.getEndPosition()) + promotionSuffix(move);
+    }
+    private String posToString(ChessPosition pos) {
+        char file = (char) ('a' + pos.getColumn()-1);
+        int rank = pos.getRow();
+        return "" + file + rank;
+    }
+    private String promotionSuffix(ChessMove move) {
+        if (move.getPromotionPiece() != null) {
+            switch (move.getPromotionPiece()) {
+                case QUEEN:
+                    return "=Q";
+                case ROOK:
+                    return "=R";
+                case BISHOP:
+                    return "=B";
+                case KNIGHT:
+                    return "=N";
+            }
+        }
+        return "";
     }
 }
