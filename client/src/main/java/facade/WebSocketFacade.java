@@ -49,6 +49,10 @@ public class WebSocketFacade extends Endpoint {
         send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, null));
     }
 
+    public void close() throws IOException {
+        if (session != null && session.isOpen()) session.close();
+    }
+
     private void send(UserGameCommand cmd) {
         if (session == null || !session.isOpen()) return;
         session.getAsyncRemote().sendText(gson.toJson(cmd));
