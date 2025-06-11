@@ -97,23 +97,19 @@ public class InGame extends Endpoint {
     private void printHelp() {
         if (playerColor != null) {
             System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + """
-                    move      <from> <to>
-                    resign                """);
+                move      <from> <to>
+                resign                """);
         }
         System.out.println("""
-                    redraw
-                    highlight <from>
-                    leave
-                    help""" + EscapeSequences.RESET_TEXT_COLOR);
-    }
-
-    private void printUnrecognizedCommand() {
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Command not recognized (type 'help')" + EscapeSequences.RESET_TEXT_COLOR);
+                redraw
+                highlight <from>
+                leave
+                help""" + EscapeSequences.RESET_TEXT_COLOR);
     }
 
     private void handleResign() {
         if (playerColor != null) {
-            System.out.print(EscapeSequences.SET_TEXT_COLOR_YELLOW + "Confirm resign <y/n>: " + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_YELLOW + "Confirm resign [y/n]: " + EscapeSequences.RESET_TEXT_COLOR);
             try {
                 String answer = new Scanner(System.in).next();
                 if (answer.toLowerCase().charAt(0) == 'y') {
@@ -138,6 +134,14 @@ public class InGame extends Endpoint {
         } catch (Exception e) {
             System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "Error: Invalid usage" + EscapeSequences.RESET_TEXT_COLOR);
         }
+    }
+
+    private void printUnrecognizedCommand() {
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_RED
+                        + "Error: Command not recognized (type 'help')"
+                        + EscapeSequences.RESET_TEXT_COLOR
+        );
     }
     private void processMove(Scanner scanner) {
         if (currentGame == null) {
@@ -278,23 +282,7 @@ public class InGame extends Endpoint {
             }
             for (int col = colStart; col != colEnd; col += colStep) {
                 ChessPosition pos = new ChessPosition(row + 1, col + 1);
-                if (pos.equals(highlight)) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_YELLOW);
-                } else {
-                    if ((row + col) % 2 == 0) {
-                        if (targets.contains(pos)) {
-                            System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
-                        } else {
-                            System.out.print(EscapeSequences.SET_BG_COLOR_BLACK);
-                        }
-                    } else {
-                        if (targets.contains(pos)) {
-                            System.out.print(EscapeSequences.SET_BG_COLOR_GREEN);
-                        } else {
-                            System.out.print(EscapeSequences.SET_BG_COLOR_WHITE);
-                        }
-                    }
-                }
+                setSquareBackground(pos, row, col, targets, highlight);
                 ChessPiece piece = currentGame.getBoard().getPiece(pos);
                 addPieces(piece);
             }
@@ -343,5 +331,18 @@ public class InGame extends Endpoint {
             }
         }
         System.out.print("[Status:In_Game] >>> ");
+    }
+    private void setSquareBackground(ChessPosition pos, int row, int col, List<ChessPosition> targets, ChessPosition highlight) {
+        if (pos.equals(highlight)) {
+            System.out.print(EscapeSequences.SET_BG_COLOR_YELLOW);
+        } else if ((row + col) % 2 == 0) {
+            System.out.print(targets.contains(pos)
+                    ? EscapeSequences.SET_BG_COLOR_DARK_GREEN
+                    : EscapeSequences.SET_BG_COLOR_BLACK);
+        } else {
+            System.out.print(targets.contains(pos)
+                    ? EscapeSequences.SET_BG_COLOR_GREEN
+                    : EscapeSequences.SET_BG_COLOR_WHITE);
+        }
     }
 }
