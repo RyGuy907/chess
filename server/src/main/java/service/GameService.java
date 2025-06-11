@@ -39,7 +39,7 @@ public class GameService {
     public void makeMove(int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
         GameData g = DAO.getGame(gameID);
         ChessGame game = g.game();
-        if (game.gameOver() != null) {
+        if (game.gameOver() == true) {
             throw new InvalidMoveException();
         }
         game.makeMove(move);
