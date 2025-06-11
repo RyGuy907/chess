@@ -1,5 +1,8 @@
 package service;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
 import dataaccess.DAO;
@@ -32,6 +35,34 @@ public class GameService {
 
     public void updateGame(GameData game) throws DataAccessException {
         DAO.updateGame(game);
+    }
+    public void makeMove(int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+        GameData g = DAO.getGame(gameID);
+        ChessGame game = g.game();
+        if (game.gameOver() != null) {
+            throw new InvalidMoveException();
+        }
+        game.makeMove(move);
+        DAO.updateGame(new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(),
+                g.gameName(), game));
+    }
+    public void resign(int gameID, String username) throws DataAccessException {
+        GameData g = DAO.getGame(gameID);
+        if (g == null) return;
+        ChessGame game = g.game();
+        String winner;
+        if (username.equals(g.whiteUsername())) {
+            winner = g.blackUsername();
+        } else {
+            winner = g.whiteUsername();
+        }
+        game.resign(username, winner);
+        DAO.updateGame(new GameData(
+                g.gameID(),
+                g.whiteUsername(),
+                g.blackUsername(),
+                g.gameName(),
+                game));
     }
 
     public void leaveGame(String username, int gameID) throws DataAccessException {

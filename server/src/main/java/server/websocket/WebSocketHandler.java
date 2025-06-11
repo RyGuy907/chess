@@ -1,5 +1,8 @@
 package server.websocket;
 
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
@@ -43,6 +46,8 @@ public class WebSocketHandler {
             switch (command.getCommandType()) {
                 case CONNECT -> connectHandler(command, session);
                 case LEAVE -> leaveHandler(command, session);
+                case MAKE_MOVE -> moveHandler(command, session);
+                case RESIGN -> resignHandler(command, session);
                 default -> send(session, new ErrorMessage("Error: invalid syntax"));
             }
         } catch (DataAccessException | IOException | UnauthorizedException exception) {
@@ -80,7 +85,7 @@ public class WebSocketHandler {
     private void send(Session session, ServerMessage message) throws IOException {
         if (session.isOpen()) session.getRemote().sendString(serializer.toJson(message));
     }
-    private void sendOut(int gameID, String excludeToken, ServerMessage message) {
+    private void sendOut(int gameID, String participantException, ServerMessage message) {
         String json = serializer.toJson(message);
         List<String> toRemove = new ArrayList<>();
         sessionsToken.forEach((token, session) -> {
@@ -89,7 +94,7 @@ public class WebSocketHandler {
                 return;
             }
             Integer game = gameToken.get(token);
-            if (game != null && game == gameID && !Objects.equals(token, excludeToken)) {
+            if (game != null && game == gameID && !Objects.equals(token, participantException)) {
                 try { session.getRemote().sendString(json); }
                 catch (IOException ignored) {}
             }
@@ -140,5 +145,63 @@ public class WebSocketHandler {
         try {
             session.close();
         } catch (Exception ignored) {}
+    }
+    private void moveHandler(UserGameCommand command, Session session) throws IOException {
+        try {
+            String user = authService.getUsername(command.getAuthToken());
+            GameData game = gameService.getGame(command.getGameID());
+            ChessGame.TeamColor playerColor;
+            if (user.equals(game.whiteUsername())) {
+                playerColor = ChessGame.TeamColor.WHITE;
+            }
+            else if (user.equals(game.blackUsername())) {
+                playerColor = ChessGame.TeamColor.BLACK;
+            }
+            else {
+                send(session, new ErrorMessage("Error: only players can move"));
+                return;
+            }
+            ChessPiece startPiece = game.game().getBoard().getPiece(command.getMove().getStartPosition());
+            if (startPiece == null || startPiece.getTeamColor() != playerColor) {
+                send(session, new ErrorMessage("Error: you can only move your own pieces"));
+                return;
+            }
+            gameService.makeMove(command.getGameID(), command.getMove());
+            sendOut(command.getGameID(), null, new GameMessage(game));
+            sendOut(command.getGameID(), command.getAuthToken(),
+                    new NotificationMessage(user + " moved."));
+
+            if (game.game().gameOver() != null) {
+                sendOut(command.getGameID(), null,
+                        new NotificationMessage(game.game().gameOver()));
+            }
+
+        } catch (InvalidMoveException ex) {
+            send(session, new ErrorMessage("Error: invalid move"));
+        } catch (UnauthorizedException | DataAccessException ex) {
+            send(session, new ErrorMessage("Error: server problem"));
+        }
+
+    }
+    private void resignHandler(UserGameCommand command, Session session) throws IOException {
+        try {
+            String user = authService.getUsername(command.getAuthToken());
+            GameData game = gameService.getGame(command.getGameID());
+            boolean isWhite = user.equals(game.whiteUsername());
+            boolean isBlack = user.equals(game.blackUsername());
+            if (!isWhite && !isBlack) {
+                send(session, new ErrorMessage("Error: only players can resign"));
+                return;
+            }
+            if (game.game().gameOver() != null) {
+                send(session, new ErrorMessage("Error: game already over"));
+                return;
+            }
+            gameService.resign(command.getGameID(), user);
+            sendOut(command.getGameID(), null,
+                    new NotificationMessage(user + " resigned."));
+        } catch (UnauthorizedException | DataAccessException ex) {
+            send(session, new ErrorMessage("Error: server problem"));
+        }
     }
 }

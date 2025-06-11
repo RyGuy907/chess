@@ -11,6 +11,7 @@ import java.util.*;
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
     private TeamColor currentTurn = TeamColor.WHITE;
+    private String gameOver = null;
 
     public ChessGame() {
         board.resetBoard();
@@ -19,6 +20,13 @@ public class ChessGame {
     /**
      * @return Which team's turn it is
      */
+    public String gameOver() {
+        return gameOver;
+    }
+    public void resign(String initiator, String winner) {
+        this.gameOver = String.format("%s has resigned. %s wins!", initiator, winner);
+    }
+
     public TeamColor getTeamTurn() {
         return currentTurn;
     }
